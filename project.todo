@@ -1,0 +1,4 @@
+# big data localdb or an object.
+# api listening node.
+# data storing every hour (file change)
+# data sync every 15min
