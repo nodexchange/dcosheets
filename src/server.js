@@ -2,7 +2,7 @@ const Koa = require('koa');
 
 const { Api } = require('./api');
 const { Data } = require('./data');
-const { SheetApi } = require('./sheetApi');
+const { SheetsApi } = require('./sheetsApi');
 
 class Server {
   constructor() {
@@ -23,7 +23,7 @@ class Server {
     this.api = new Api(this);
   }
   initSheetApi() {
-    this.sheetApi = new SheetApi(this);
+    this.sheetsApi = new SheetsApi(this);
   }
 
 }
