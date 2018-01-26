@@ -1,11 +1,7 @@
+const creds = require('./../sheets-service.json');
 class Authorisation {
-  constructor(authCallback, doc) {
-    this.init(authCallback, doc);
-  }
-
-  init(authCallbackapi, doc) {
-    const creds = require('./../sheets-service.json');
-    doc.useServiceAccountAuth(creds, authCallbackapi);
+  constructor(doc, cb) {
+    doc.useServiceAccountAuth(creds, cb);
   }
 }
 

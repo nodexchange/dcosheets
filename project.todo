@@ -2,3 +2,14 @@
 # api listening node.
 # data storing every hour (file change)
 # data sync every 15min
+
+= api call to enable a spreadsheet sync
+= api call to trigger a product click 
+= every 15 min take the database and sync up with the google spreadsheet
+= every 5 minutes create a new file? 
+= sheets read value before updating 
+
+spreadsheet is a json object
+ id as the key
+   items stored
+      clickthrough column value 

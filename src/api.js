@@ -2,11 +2,9 @@ const Router = require('koa-router');
 // spreadsheet key is the long id in the sheets URL
 
 class Api {
-  constructor(app, db, doc) {
-    this.db = db;
-    this.doc = doc;
-    this.sheet = '';
+  constructor(server) {
     const router = new Router();
+    this.server = server;
 
     router.get('/', (ctx, next) => {
       ctx.body = 'Hello World!';
@@ -15,23 +13,26 @@ class Api {
       ctx.body = 'WRITE TEST!';
       this.writeToACell(); // async... will do it whenever
     });
-    router.use('/gsheetInfo', async (ctx, next) => {
-      await this.retrieveInfo()
-      await next()
-    }).get('/gsheetInfo', async (ctx, next) => {
-      ctx.body = 'DONE READING is '+ this.sheet.title;
-    })
 
     router.use('/gsheetInfo', async (ctx, next) => {
       await this.retrieveInfo()
       await next()
     }).get('/gsheetInfo', async (ctx, next) => {
       ctx.body = 'DONE READING is '+ this.sheet.title;
-    })
+    });
+
+    router.get('/sheet', (ctx, next) => {
+      ctx.body = 'DONE READING is';
+      // localhost:3000/sheet?id=1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw&expiry=20
+      let sheetObject = {};
+      sheetObject.id = ctx.request.query.id;
+      sheetObject.expiry = ctx.request.query.expiry;
+      this.server.data.activeSpreadsheet(sheetObject);
+    });
 
     // app.use(_.get('/read', (ctx, name) => this.gsheetRead(ctx, name)));
 
-    app
+    server.koa
       .use(router.routes())
       .use(router.allowedMethods());
 
