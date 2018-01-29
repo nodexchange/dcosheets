@@ -11,5 +11,6 @@
 
 spreadsheet is a json object
  id as the key
+ configurated by the api call pointing at certain collumns as the clickthrough perhaps
    items stored
       clickthrough column value 

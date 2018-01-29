@@ -59,7 +59,6 @@ class Data {
     console.log('NEED A NEW ONE BOY');
     sheet = this.createNewDbSheetItem(apiQuery);
     this.server.sheetsApi.retrieveSheetDetails(sheet, this.storeSheet);
-    // this.storeSheet(apiQuery);
   }
   createNewDbSheetItem(apiQuery) {
     let newSheet = {};
