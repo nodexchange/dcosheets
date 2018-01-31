@@ -5,5 +5,4 @@ class Authorisation {
   }
 }
 
-
-exports.Authorisation = Authorisation;
+module.exports = Authorisation;
