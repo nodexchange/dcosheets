@@ -2,7 +2,7 @@ const SheetDocument = require('./sheetDocument');
 
 class SheetsApi {
   constructor(server) {
-    this.server = this;
+    this.server = server;
   }
 
   init() {
@@ -73,7 +73,7 @@ class SheetsApi {
     });
   }
 
-  getClickthroughValues(sheet, products, rowCount, callback, context) {
+  getClickthroughValues(sheet, products, rowCount, serverClassCallback, context) {
     sheet.getCells({
       'min-row': 1,
       'max-row': rowCount,
@@ -95,7 +95,7 @@ class SheetsApi {
           products[id].clicks = cells[k].value;
         }
         // FINAL CALLBACK
-      callback(products);
+        serverClassCallback(products, context.server);
     });
   }
 

@@ -2,9 +2,28 @@
   "sheets": {
     "1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw": {
       "expiry": 20,
-      "products": {}
-    },
-    "id": "1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw",
-    "expiry": 20
+      "products": [
+        {
+          "id": "0",
+          "clicks": "14"
+        },
+        {
+          "id": "1",
+          "clicks": "22"
+        },
+        {
+          "id": "2",
+          "clicks": "50"
+        },
+        {
+          "id": "3",
+          "clicks": "46"
+        },
+        {
+          "id": "4",
+          "clicks": "57"
+        }
+      ]
+    }
   }
 }

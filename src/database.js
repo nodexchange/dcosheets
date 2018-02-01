@@ -5,7 +5,7 @@ const low = require('lowdb');
 const FileAsync = require('lowdb/adapters/FileAsync');
 const adapter = new FileAsync('db.json');
 
-class Data {
+class Database {
   constructor({ server }) {
     this.server = server;
   }
@@ -14,7 +14,6 @@ class Data {
     const db = low(adapter).then(db => {
       // Set db default values
       this.db = db;
-      this.testDbStore();
       resolve(this.db);
       return db.defaults({
         sheets: {}
@@ -28,26 +27,24 @@ class Data {
     sheetObject.id = '1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw';
     sheetObject.expiry = 20;
     this.checkIfSheetExistsInDb(sheetObject);
-
   }
 
-  checkIfSheetExistsInDb(apiQuery) {
-    let sheet = this.db.get('sheets['+apiQuery.id+']')
+  checkIfSheetExistsInDb(apiQuery, products) {
+    let dbSheetObject = this.db.get('sheets['+apiQuery.id+']')
       .value();
-
-    if (sheet.expiry) {
+    let newDbSheet = this.createNewDbSheetItem(apiQuery, products);
+    if (dbSheetObject.expiry) {
       // TODO (martin.wojtala) : validate expiry
-      console.log('already found buddy');
+      console.log('already found buddy - validate');
       return;
     }
-    sheet = this.createNewDbSheetItem(apiQuery);
-    this.server.sheetsApi.retrieveSheetDetails(sheet, this.storeSheetInDb);
+    this.storeSheetInDb(newDbSheet);
   }
-  createNewDbSheetItem(apiQuery) {
+  createNewDbSheetItem(apiQuery, products) {
     let newSheet = {};
     newSheet[apiQuery.id] = {
       expiry: apiQuery.expiry,
-      products: {}
+      products: products
     };
     return newSheet;
   }
@@ -60,6 +57,33 @@ class Data {
       .assign(sheet)
       .write();
     console.log('STORED A NEW DUDE');
+  }
+
+  syncData(virtualObject) {
+    this.currentSyncProgressId = 0;
+    this.syncVirtualSheetToDb(this.currentSyncProgressId, virtualObject, this.syncNextSheet);
+    console.log(); // "a"
+  }
+
+  syncVirtualSheetToDb(id, virtualObject, callback) {
+    const sheetId = Object.keys(virtualObject)[id];
+    if (sheetId) {
+      console.log('continue syncing', sheetId);
+    } else {
+      console.log('YOU ARE DONE SYNCING');
+    }
+  }
+
+  syncNextSheet(context) {
+    const self = context;
+    self.currentSyncProgressId++;
+    console.log('HERE>>>');
+  }
+
+
+  fetchSheetsData() {
+    let dbSheetObject = this.db.get('sheets').cloneDeep().value();
+    return dbSheetObject;
   }
 
   get server() {
@@ -82,4 +106,4 @@ class Data {
   }
 }
 
-module.exports = Data;
+module.exports = Database;
