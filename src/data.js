@@ -8,19 +8,6 @@ const adapter = new FileAsync('db.json');
 class Data {
   constructor(server) {
     this.server = server;
-
-    // // Set some defaults
-    // db.defaults({ posts: [], user: {}, count: 0 })
-    const db = low(adapter).then(db => {
-      // Set db default values
-      this.db = db;
-      this.testDbStore();
-      return db.defaults({
-        sheets: {}
-      }).write();
-      /* DEBUG */
-    });
-
     // // Add a post
     // db.get('posts')
     //   .push({ id: 1, title: 'lowdb is awesome'})
@@ -33,9 +20,20 @@ class Data {
     // // Increment count
     // db.update('count', n => n + 1)
     //   .write()
-    // localhost:3000/sheet?id=1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw&expiry=20
-
+    this.setupDatabaseDefaults();
   }
+
+  setupDatabaseDefaults() {
+    // Set db default values
+    const db = low(adapter).then(db => {
+      this.db = db;
+      // this.testDbStore();
+      return db.defaults({
+        sheets: {}
+      }).write();
+    });
+  }
+
   testDbStore() {
     console.log('Simulate an API Route call [testDBStore] ?');
     let sheetObject = {};
@@ -78,6 +76,17 @@ class Data {
       .write();
     console.log('STORED A NEW DUDE');
   }
+
+  /* 
+  * Accept server class
+  */
+  set server(value) {
+    if (typeof value !== 'function') {
+      throw new Error('"server" value must be a class.');
+    }
+
+    this._server = value;
+  }
 }
 
-exports.Data = Data;
+module.exports = Data;

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "nyc mocha",
+    "simple-test": "mocha",
     "watch": "nodemon src/server.js"
   },
   "keywords": [],

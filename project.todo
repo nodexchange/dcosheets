@@ -9,6 +9,10 @@
 = every 5 minutes create a new file? 
 = sheets read value before updating 
 
+mysql
+mongodb
+sepra
+
 spreadsheet is a json object
  id as the key
  configurated by the api call pointing at certain collumns as the clickthrough perhaps
