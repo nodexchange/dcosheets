@@ -1,18 +1,13 @@
 
 const GoogleSpreadsheet = require('google-spreadsheet');
-const { Authorisation } = require('./authorisation');
+const Authorisation = require('./authorisation');
 
 
 class SheetDocument {
-  constructor(id) {
-    this.doc = new GoogleSpreadsheet('1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw');
-    const auth = new Authorisation(this.doc, this.init);
-    return this.doc;
-  }
-
-  init() {
-    // console.log('SheetData IS ALIIIIVVVEEEE and AUTHORISED!!;');
+  constructor({ id, sheetActiveCallback, callback, context }) {
+    const doc = new GoogleSpreadsheet(id);
+    const auth = new Authorisation(doc, () => { sheetActiveCallback(doc, callback, context) });
   }
 }
 
-exports.SheetDocument = SheetDocument;
+module.exports = SheetDocument;

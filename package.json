@@ -6,8 +6,11 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "nyc mocha",
-    "simple-test": "mocha",
-    "watch": "nodemon src/server.js"
+    "watch": "nodemon src/server.js",
+    "test-node": "./node_modules/mocha/bin/mocha $(find api -name '*-test.js')",
+    "test-node-babel": "./node_modules/mocha/bin/mocha $(find api -name '*-test.js') --compilers js:babel-core/register",
+    "test-node-watch": "./node_modules/mocha/bin/mocha --watch",
+    "test-node-babel-watch": "./node_modules/mocha/bin/mocha $(find api -name '*-test.js') --compilers js:babel-core/register --watch"
   },
   "keywords": [],
   "author": "",

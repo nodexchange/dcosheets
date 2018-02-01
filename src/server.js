@@ -1,8 +1,8 @@
 const Koa = require('koa');
 
-const { Api } = require('./api');
-const { Data } = require('./data');
-const { SheetsApi } = require('./sheetsApi');
+const Api = require('./api');
+const Data = require('./data');
+const SheetsApi = require('./sheetsApi');
 
 class Server {
   constructor() {
@@ -10,9 +10,13 @@ class Server {
     this.initKoa();
     this.initApiRoutes();
     this.initSheetApi();
+
+    /* DEBUG */
+
+    this.testInfoRetrieve();
   }
   initData() {
-    this.data = new Data();
+    this.data = new Data({ server:this });
   }
   initKoa() {
     this.koa = new Koa();
@@ -24,6 +28,15 @@ class Server {
   }
   initSheetApi() {
     this.sheetsApi = new SheetsApi(this);
+  }
+  testInfoRetrieve() {
+    // ;
+    let testApiQuery = { id:'1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw' };
+    this.sheetsApi.retrieveSheetDetails(testApiQuery, this.sheetInfoCallBack);
+  }
+
+  sheetInfoCallBack(result) {
+    console.log('[sheetInfoCallBack] HERE???', result);
   }
 
 }

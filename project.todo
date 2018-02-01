@@ -4,10 +4,10 @@
 # data sync every 15min
 
 = api call to enable a spreadsheet sync
-= api call to trigger a product click 
+= api call to trigger a product click
 = every 15 min take the database and sync up with the google spreadsheet
-= every 5 minutes create a new file? 
-= sheets read value before updating 
+= every 5 minutes create a new file?
+= sheets read value before updating
 
 mysql
 mongodb
@@ -17,4 +17,9 @@ spreadsheet is a json object
  id as the key
  configurated by the api call pointing at certain collumns as the clickthrough perhaps
    items stored
-      clickthrough column value 
+      clickthrough column value
+
+(DONE) # connect to spreadsheet and retrieve items.
+# create a sync function local memory object to database.
+# create api to collect clickthrough.
+# create a function to sync up db with the spreadsheet.
