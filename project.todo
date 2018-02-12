@@ -20,6 +20,22 @@ spreadsheet is a json object
       clickthrough column value
 
 (DONE) # connect to spreadsheet and retrieve items.
-# create a sync function local memory object to database.
-# create api to collect clickthrough.
+(DONE) # create a sync function local memory object to database.
+
+# create api routes.
+  # clickthrough Api
+    # sheet in the memory => update value +1
+    # sheet not in the memory => retrieve sheet => update the value => store in the memory?!
+
+  # create new sheet
+    # create a new virtual object
+      # connect to gsheets
+        # retrieve details 
+          # store products in the memory object.
+  
+  # create new sheet  
+    # already in the memory error / do nothing? 
+
+# create timer for data dump / syncs.
 # create a function to sync up db with the spreadsheet.
+

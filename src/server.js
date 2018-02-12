@@ -1,6 +1,6 @@
 const Koa = require('koa');
 
-const Api = require('./api');
+const Routes = require('./routes');
 const Database = require('./database');
 const SheetsApi = require('./sheetsApi');
 const VirtualObject = require('./virtualObject');
@@ -35,7 +35,7 @@ class Server {
         { id: '4', clicks: '57' } 
       ];
       // this.testStoreProducts(result);
-      this.testStoreVirtualObject(result);
+      // this.testStoreVirtualObject(result);
     });
   }
   initKoa() {
@@ -44,7 +44,7 @@ class Server {
     console.log('listening on port 3000');
   }
   initApiRoutes() {
-    this.api = new Api(this);
+    this.routes = new Routes(this);
   }
   initSheetApi() {
     this.sheetsApi = new SheetsApi(this);
@@ -63,10 +63,9 @@ class Server {
   }
 
   testUpdateProductClick(context) {
-    console.log('READY??? to test clicks updates');
     const self = context;
-    self.virtualObject.updateClickValue({sheetId:self.testApiQuery.id, productId:2});
-    self.virtualObject.forceSync();
+    // self.virtualObject.updateClickValue({sheetId:self.testApiQuery.id, productId:2});
+    // self.virtualObject.forceSync(self.virtualObject.syncComplete);
   }
 
   testStoreProducts() {

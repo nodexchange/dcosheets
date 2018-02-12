@@ -3,17 +3,20 @@ class VirtualObject {
     this.server = server;
     this.virtualObject = {sheets:{}};
   }
-  forceSync() {
+  forceSync(syncCompleteCallback) {
     console.log('HERE???');
-    this.syncVirtualObjectToLocalDb();
+    this.syncVirtualObjectToLocalDb(syncCompleteCallback);
   }
   syncLocalDbToVirtualObject({callback, context}) {
     const sheets = this.server.database.fetchSheetsData();
     this.virtualObject = sheets;
     callback(context);
   }
-  syncVirtualObjectToLocalDb() {
-    this.server.database.syncData(this.virtualObject);
+  syncVirtualObjectToLocalDb(syncCompleteCallback) {
+    this.server.database.syncData(this.virtualObject, syncCompleteCallback);
+  }
+  syncComplete() {
+    console.log('>>>>>>>>>>> YOU DID IT BRO <<<<<<<<<<<<');
   }
   updateClickValue({sheetId, productId}) {
     if (!this.virtualObject[sheetId].expiry) {

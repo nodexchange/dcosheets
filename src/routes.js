@@ -1,11 +1,28 @@
 const Router = require('koa-router');
+const koaBody = require('koa-body');
+
 // spreadsheet key is the long id in the sheets URL
 
-class Api {
+class Routes {
   constructor(server) {
     const router = new Router();
     this.server = server;
+    this.setupRoutes(router);
+    
+    // app.use(_.get('/read', (ctx, name) => this.gsheetRead(ctx, name)));
 
+    server.koa
+      .use(router.routes())
+      .use(router.allowedMethods());
+
+    this.init();
+  }
+
+  init() {
+    console.log('CLASS IS ALIIIIVVVEEEE;');
+  }
+
+  setupRoutes(router) {
     router.get('/', (ctx, next) => {
       ctx.body = 'Hello World!';
     });
@@ -29,18 +46,21 @@ class Api {
       sheetObject.expiry = ctx.request.query.expiry;
       this.server.data.activeSpreadsheet(sheetObject);
     });
-
-    // app.use(_.get('/read', (ctx, name) => this.gsheetRead(ctx, name)));
-
-    server.koa
-      .use(router.routes())
-      .use(router.allowedMethods());
-
-    this.init();
-  }
-
-  init() {
-    console.log('CLASS IS ALIIIIVVVEEEE;');
+    router.post('/click', koaBody(), (ctx, next) => {
+      if (ctx.request.header.storeclick) {
+        ctx.body = 'DONE';
+        // console.log('>>>>> SID : ' + ctx.request.body.sid);
+        // console.log('>>>>> PID : ' + ctx.request.body.pid);
+      } else {
+        ctx.body = 'sclick token mismatch...';
+      }
+        // => POST body
+      // ctx.body = JSON.stringify(ctx.request.body);
+      // let sheetObject = {};
+      // sheetObject.id = ctx.request.query.id;
+      // sheetObject.expiry = ctx.request.query.expiry;
+      // this.server.data.activeSpreadsheet(sheetObject);
+    });
   }
 
   writeToACell() {
@@ -82,4 +102,4 @@ class Api {
   }
 }
 
-module.exports = Api;
+module.exports = Routes;
