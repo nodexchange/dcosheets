@@ -39,3 +39,6 @@ spreadsheet is a json object
 # create timer for data dump / syncs.
 # create a function to sync up db with the spreadsheet.
 
+
+☐ What would happen if sync virtual happens when clicks are dropped?
+

@@ -23,6 +23,7 @@ class Routes {
   }
 
   setupRoutes(router) {
+    var self = this;
     router.get('/', (ctx, next) => {
       ctx.body = 'Hello World!';
     });
@@ -49,8 +50,11 @@ class Routes {
     router.post('/click', koaBody(), (ctx, next) => {
       if (ctx.request.header.storeclick) {
         ctx.body = 'DONE';
-        // console.log('>>>>> SID : ' + ctx.request.body.sid);
-        // console.log('>>>>> PID : ' + ctx.request.body.pid);
+        console.log(ctx.request.body);
+        let params = ctx.request.body.split('&');
+        let sid = params[0].split('=')[1];
+        let pid = params[1].split('=')[1];
+        self.server.virtualObject.updateClickValue({ sheetId:sid, productId:pid });
       } else {
         ctx.body = 'sclick token mismatch...';
       }
