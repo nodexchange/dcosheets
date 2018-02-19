@@ -68,14 +68,13 @@ class Database {
   }
 
   syncVirtualSheetToDb(id, virtualObject, callback, context, finalCallback) {
-    console.log('SYNCING>>>' + id);
     const self = context;
-    const virtualSheetId = Object.keys(virtualObject)[id];
+    const virtualSheetId = Object.keys(virtualObject.sheets)[id];
     if (virtualSheetId) {
-      console.log('continue syncing', id);
+      console.log('[DB syncVirtualSheetToDb] continue syncing', id, virtualSheetId);
       self.syncNextSheet(virtualSheetId, virtualObject, self, self.syncVirtualSheetToDb, finalCallback);
     } else {
-      console.log('YOU ARE DONE SYNCING');
+      console.log('[DB syncVirtualSheetToDb] YOU ARE DONE SYNCING', id, virtualSheetId);
       finalCallback();
     }
   }
@@ -84,16 +83,22 @@ class Database {
     const self = context;
     let dbSheetObject = self.db.get('sheets['+sheetId+']')
       .value();
-    let matchingVirtualSheet = virtualObject[sheetId];
-    if (dbSheetObject.products && matchingVirtualSheet.products) {
-      if (dbSheetObject.products[0] && matchingVirtualSheet.products[0]) {
-        dbSheetObject.products = matchingVirtualSheet.products;
-      }
+    let matchingVirtualSheet = virtualObject.sheets[sheetId];
+    console.log(matchingVirtualSheet);
+    if (!matchingVirtualSheet || !dbSheetObject) {
+      console.log('[DB SyncNextSheet], no matching virtual sheet', self.currentSyncProgressId);
     } else {
-      console.log('ERROR Syncing, products [not found] or products [not defined]');
+      if (dbSheetObject.products && matchingVirtualSheet.products) {
+        if (dbSheetObject.products[0] && matchingVirtualSheet.products[0]) {
+          self.server.arrayUtils.compareAndUpdate(dbSheetObject.products, matchingVirtualSheet.products);
+          console.log('>>>> ALIGNED HERE', dbSheetObject.products);
+        }
+        self.db.write(); // debug disable
+      } else {
+        console.log('ERROR Syncing, products [not found] or products [not defined]', self.currentSyncProgressId);
+      }
     }
     self.currentSyncProgressId++;
-    console.log('HERE>>>');
     if (callback) {
       callback(self.currentSyncProgressId, virtualObject, self.syncNextSheet, self, finalCallback);
     }

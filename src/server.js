@@ -1,8 +1,9 @@
 const Koa = require('koa');
-
 const Routes = require('./routes');
 const Database = require('./database');
 const SheetsApi = require('./sheetsApi');
+const ArrayUtils = require('./ArrayUtils');
+const SyncManager = require('./syncManager');
 const VirtualObject = require('./virtualObject');
 
 class Server {
@@ -12,6 +13,8 @@ class Server {
     this.initKoa();
     this.initApiRoutes();
     this.initSheetApi();
+    this.initSyncManager();
+    this.initArrayUtils();
     this.setupDatabaseDefaults();
   }
   initData() {
@@ -19,6 +22,9 @@ class Server {
   }
   initVitualObject() {
     this.virtualObject = new VirtualObject({ server: this });
+  }
+  initArrayUtils() {
+    this.arrayUtils = new ArrayUtils({ server: this });
   }
   /* DEBUG */
   setupDatabaseDefaults() {
@@ -48,6 +54,9 @@ class Server {
   }
   initSheetApi() {
     this.sheetsApi = new SheetsApi(this);
+  }
+  initSyncManager() {
+    this.syncManager = new SyncManager(this);
   }
   testInfoRetrieve() {
     // ;

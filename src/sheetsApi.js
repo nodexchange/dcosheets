@@ -90,7 +90,6 @@ class SheetsApi {
         }
 
         for (let k=1; k<cells.length; k++) {
-          // console.log('WE ARE HERE>>>', cells[k].value);
           let id = k-1;
           products[id].clicks = cells[k].value;
         }

@@ -4,7 +4,7 @@ class VirtualObject {
     this.virtualObject = {sheets:{}};
   }
   forceSync(syncCompleteCallback) {
-    console.log('HERE???');
+    console.log('[VB forceSync]', this.virtualObject);
     this.syncVirtualObjectToLocalDb(syncCompleteCallback);
   }
   syncLocalDbToVirtualObject({callback, context}) {
@@ -19,21 +19,21 @@ class VirtualObject {
     console.log('>>>>>>>>>>> YOU DID IT BRO <<<<<<<<<<<<');
   }
   updateClickValue({sheetId, productId}) {
-    if (!this.virtualObject[sheetId]) {
+    if (!this.virtualObject.sheets[sheetId]) {
       console.log(' SHEET NOT IN THE MEMORY --- GET IT')
-      this.virtualObject[sheetId] = {};
-      this.virtualObject[sheetId].products = [];
-      this.virtualObject[sheetId].products.push({"id":productId, clicks:0, clicksToUpdate:0});
+      this.virtualObject.sheets[sheetId] = {};
+      this.virtualObject.sheets[sheetId].products = [];
+      this.virtualObject.sheets[sheetId].products.push({"id":productId, clicks:0, clicksToUpdate:0});
     }
-    const products = this.virtualObject[sheetId].products;
+    const products = this.virtualObject.sheets[sheetId].products;
     for (let i=0; i < products.length; i++) {
       if (products[i].id === productId || parseInt(products[i].id) === productId) {
         products[i].clicksToUpdate = parseInt(products[i].clicksToUpdate) + 1;
         products[i].clicksToUpdate = products[i].clicksToUpdate.toString();
       }
     }
-    this.virtualObject[sheetId].products = products;
-    console.log(this.virtualObject[sheetId].products[0]);
+    this.virtualObject.sheets[sheetId].products = products;
+    // console.log(this.virtualObject.sheets[sheetId].products[0]);
   }
 }
 
