@@ -1,7 +1,8 @@
 class SyncManager {
   constructor(server) {
     this.server = server;
-    setInterval(() => this.syncTimerCompleteHandler(), 10000);
+    // setInterval(() => this.syncTimerCompleteHandler(), 3000);
+    setTimeout(() => this.syncTimerCompleteHandler(), 3000);
   }
 
   init() {

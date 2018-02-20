@@ -16,10 +16,19 @@ class Routes {
       .use(router.allowedMethods());
 
     this.init();
+    setTimeout(() => {
+      this.debugCall();
+    },  1000);
   }
 
   init() {
     console.log('CLASS IS ALIIIIVVVEEEE;');
+  }
+
+  debugCall() {
+    const sid= '1nbBCOxUxo9DcFjH-Vfzx2iqTyDcP00dKCc5YUCPK2Dw'
+    const pid = '2';
+    this.server.virtualObject.updateClickValue({ sheetId:sid, productId:pid });
   }
 
   setupRoutes(router) {

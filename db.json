@@ -5,20 +5,20 @@
       "products": [
         {
           "id": "0",
-          "clicks": "14"
+          "clicks": "10"
         },
         {
           "id": "1",
-          "clicks": "22"
+          "clicks": "20"
         },
         {
           "id": "2",
-          "clicks": "56",
-          "clicksToUpdate": "8"
+          "clicksToUpdate": "0",
+          "clicks": "39"
         },
         {
           "id": "3",
-          "clicks": "46"
+          "clicks": "40"
         },
         {
           "id": "4",

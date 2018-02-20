@@ -9,24 +9,45 @@ class SheetsApi {
     // console.log('SheetData IS ALIIIIVVVEEEE and AUTHORISED!!;');
   }
 
-  retrieveSheetDetails({ id }, cb) {
+  retrieveSheetDetails({ id }, callbackObject) {
     const doc = new SheetDocument({
       id: id,
       sheetActiveCallback: this.sheetActiveCallback,
       context: this,
-      callback: cb
+      callbackObject: callbackObject
     });
   }
 
-  sheetActiveCallback(doc, callback, context) {
+  sheetActiveCallback(doc, callbackObject, context) {
     const self = context;
-    context.retrieveInfo(doc, self.sheetReadyCallback, callback, context);
+    context.retrieveInfo(doc, callbackObject, context);
+  }
+
+  updateGSheet(sheetId, dbSheetObject, currentSheetSyncCompleted, saveDbOnSyncComplete, syncVirtualSheetToDB, context) {
+    // console.log('[sheetsApi](updateGSheet) ', dbSheetObject);
+    console.log('=================== sheetsApi ==============================');
+    console.log(sheetId);
+    const callbackObject = {
+      dbSheetObject: dbSheetObject,
+      currentSheetSyncCompleted:currentSheetSyncCompleted,
+      saveDbOnSyncComplete: saveDbOnSyncComplete,
+      syncVirtualSheetToDB: syncVirtualSheetToDB,
+      gSheetSyncCompleted: this.gSheetSyncCompleted,
+      context: context,
+    }
+    this.retrieveSheetDetails({id:sheetId}, callbackObject);
+    // done 
+  }
+
+  gSheetSyncCompleted({syncVirtualSheetToDB, currentSheetSyncCompleted, saveDbOnSyncComplete, context}) {
+    saveDbOnSyncComplete(context);
+    currentSheetSyncCompleted(syncVirtualSheetToDB, context);
   }
 
   /* Creates a new promise allowing the google-spreadsheet-api to
    * connect to the system and retrieve google sheet name
    */
-  retrieveInfo(doc, sheetReadyCallback, callback, context) {
+  retrieveInfo(doc, callbackObject, context) {
     let self = context;
     return new Promise((r) => {
       doc.getInfo((err, info) => {
@@ -37,20 +58,21 @@ class SheetsApi {
         const sheet = info.worksheets[0];
         const rowCount = sheet.rowCount;
         console.log('sheet 1: ' + sheet.title + ' | Row Count: ' + sheet.rowCount + ' | Col Count:' + sheet.colCount);
-        sheetReadyCallback(sheet, rowCount, callback, self);
+        self.sheetReadyCallback(sheet, rowCount, callbackObject, self);
         r();
       });
     });
   }
 
-  sheetReadyCallback(sheet, rowCount, callback, context) {
+  sheetReadyCallback(sheet, rowCount, callbackObject, context) {
     const self = context;
     // self.getRowInfo(sheet, sheetRowInfo);
     const products = [];
-    self.getProductsIdsFromFirstRow(sheet, products, rowCount, self.getClickthroughValues, callback, self);
+    self.getProductsIdsFromFirstRow(sheet, products, rowCount, callbackObject, self);
   }
 
-  getProductsIdsFromFirstRow(sheet, products, rowCount, clickthroughCallback, callback, context) {
+  getProductsIdsFromFirstRow(sheet, products, rowCount, callbackObject, context) {
+    const self = context;
     sheet.getCells({
       'min-row': 1,
       'max-row': rowCount,
@@ -66,14 +88,15 @@ class SheetsApi {
         console.log('Header was correct >>>');
       }
 
-      for (let k=1; k<cells.length; k++) {
+      for (let k=1; k<cells.length - 1; k++) {
         products.push({id: cells[k].value});
       }
-      clickthroughCallback(sheet, products, rowCount, callback, context);
+      self.getClickthroughValues(sheet, products, rowCount, callbackObject, context);
     });
   }
 
-  getClickthroughValues(sheet, products, rowCount, serverClassCallback, context) {
+  getClickthroughValues(sheet, products, rowCount, callbackObject, context) {
+    const self = context;
     sheet.getCells({
       'min-row': 1,
       'max-row': rowCount,
@@ -87,14 +110,34 @@ class SheetsApi {
       const headerCell = cells[0];
       if (headerCell.value === 'Clicks') {
         console.log('CLICKS FOUND WE ARE A GO>>>');
+        const dbObject = callbackObject.dbSheetObject;
+        let sheetsWillNeedUpdating = false;
+        for (let k=1; k<cells.length - 1; k++) {
+          let id = k - 1;
+          for (let i=0; i<dbObject.products.length; i++) {
+            if (dbObject.products[i].id === products[id].id) {
+              let currentClicks = cells[k].value;
+              // check if value needs increasing;
+              if (dbObject.products[i].clicksToUpdate) {
+                const clicksToAdd = parseInt(dbObject.products[i].clicksToUpdate);
+                if (clicksToAdd > 0) {
+                  currentClicks = parseInt(currentClicks) + clicksToAdd;
+                  dbObject.products[i].clicksToUpdate = '0';
+                  sheetsWillNeedUpdating = true;
+                }
+              }
+              dbObject.products[i].clicks = currentClicks.toString();;
+              cells[k].value = currentClicks.toString();
+            }
+          }
+          // products[id].clicks = cells[k].value;
         }
 
-        for (let k=1; k<cells.length; k++) {
-          let id = k-1;
-          products[id].clicks = cells[k].value;
+        if (sheetsWillNeedUpdating) {
+          sheet.bulkUpdateCells(cells);
         }
-        // FINAL CALLBACK
-        serverClassCallback(products, context.server);
+      }
+      callbackObject.gSheetSyncCompleted(callbackObject);
     });
   }
 

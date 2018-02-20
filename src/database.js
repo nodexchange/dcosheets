@@ -64,26 +64,28 @@ class Database {
 
   syncData(virtualObject, callback) {
     this.currentSyncProgressId = 0;
-    this.syncVirtualSheetToDb(this.currentSyncProgressId, virtualObject, this.syncNextSheet, this, callback);
+    this.finalCallback = callback;
+    this.syncVirtualSheetToDb(this.currentSyncProgressId, virtualObject, this);
   }
 
-  syncVirtualSheetToDb(id, virtualObject, callback, context, finalCallback) {
+  syncVirtualSheetToDb(id, virtualObject, context) {
     const self = context;
+    self.virtualObject = virtualObject;
     const virtualSheetId = Object.keys(virtualObject.sheets)[id];
     if (virtualSheetId) {
       console.log('[DB syncVirtualSheetToDb] continue syncing', id, virtualSheetId);
-      self.syncNextSheet(virtualSheetId, virtualObject, self, self.syncVirtualSheetToDb, finalCallback);
+      self.syncNextSheet(virtualSheetId, self, self.syncVirtualSheetToDb);
     } else {
       console.log('[DB syncVirtualSheetToDb] YOU ARE DONE SYNCING', id, virtualSheetId);
-      finalCallback();
+      self.finalCallback();
     }
   }
 
-  syncNextSheet(sheetId, virtualObject, context, callback, finalCallback) {
+  syncNextSheet(sheetId, context, syncVirtualSheetToDB) {
     const self = context;
     let dbSheetObject = self.db.get('sheets['+sheetId+']')
       .value();
-    let matchingVirtualSheet = virtualObject.sheets[sheetId];
+    let matchingVirtualSheet = self.virtualObject.sheets[sheetId];
     console.log(matchingVirtualSheet);
     if (!matchingVirtualSheet || !dbSheetObject) {
       console.log('[DB SyncNextSheet], no matching virtual sheet', self.currentSyncProgressId);
@@ -91,16 +93,25 @@ class Database {
       if (dbSheetObject.products && matchingVirtualSheet.products) {
         if (dbSheetObject.products[0] && matchingVirtualSheet.products[0]) {
           self.server.arrayUtils.compareAndUpdate(dbSheetObject.products, matchingVirtualSheet.products);
-          console.log('>>>> ALIGNED HERE', dbSheetObject.products);
+          // console.log('>>>> ALIGNED HERE', dbSheetObject.products);
+          self.server.sheetsApi.updateGSheet(sheetId, dbSheetObject, self.currentSheetSyncCompleted, self.saveDatabaseOnSyncComplete, syncVirtualSheetToDB, self);
         }
-        self.db.write(); // debug disable
       } else {
         console.log('ERROR Syncing, products [not found] or products [not defined]', self.currentSyncProgressId);
+        self.currentSheetSyncCompleted(syncVirtualSheetToDB, context);
       }
     }
+  }
+  // callback = this.syncVirtualSheetToDb
+  saveDatabaseOnSyncComplete(context) {
+    const self = context;
+    self.db.write(); // debug disable
+  }
+  currentSheetSyncCompleted(syncVirtualSheetToDB, context) {
+    const self = context;
     self.currentSyncProgressId++;
-    if (callback) {
-      callback(self.currentSyncProgressId, virtualObject, self.syncNextSheet, self, finalCallback);
+    if (syncVirtualSheetToDB) {
+      syncVirtualSheetToDB(self.currentSyncProgressId, self.virtualObject, self);
     }
   }
 
